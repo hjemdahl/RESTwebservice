@@ -19,7 +19,7 @@ class Courses {
 
     // Get courses
     public function getCourses() {
-        $sql = "SELECT code, name, level, syllabus FROM courses";
+        $sql = "SELECT id, code, name, level, syllabus FROM courses";
         $result = $this->db->query($sql);
         return mysqli_fetch_all($result, MYSQLI_ASSOC);
     }

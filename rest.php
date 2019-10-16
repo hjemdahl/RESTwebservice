@@ -6,12 +6,19 @@ include('includes/config.php');
 //Header information and allowance
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
 header("Access-Control-Allow-Methods: GET, POST, DELETE, PUT");
 
 // Switch for different request methods
 $method = $_SERVER['REQUEST_METHOD'];
+$request = explode('/', trim($_SERVER['PATH_INFO'], '/'));
 $input = json_decode(file_get_contents('php://input'), true);
 $course = new Courses(); // New object
+
+if($request[0] != "api"){ 
+	http_response_code(404);
+	exit();
+}
 
 switch ($method) {
     case "GET":
@@ -33,7 +40,7 @@ switch ($method) {
         }
         break;
     case "DELETE":
-        if($course->deleteCourse($input['id'])) { // If response is bigger than 0 = OK
+        if($course->deleteCourse($request[1])) { // If response is bigger than 0 = OK
             http_response_code(200);
             $response = array("message" => "Kursen är raderad.");
         } else { // Else error message
@@ -42,7 +49,7 @@ switch ($method) {
         }
         break;
     case "PUT":
-        if($course->updateCourse($input['id'], $input['code'], $input['name'], $input['level'], $input['syllabus'])) {
+        if($course->updateCourse($request[1], $input['code'], $input['name'], $input['level'], $input['syllabus'])) {
             http_response_code(200); // If response is bigger than 0 = OK
             $response = array("message" => "Kursen är uppdaterad.");
         } else { // Else error message
@@ -54,4 +61,3 @@ switch ($method) {
 
 // Write to response in JSON to console
 echo json_encode($response);
-
